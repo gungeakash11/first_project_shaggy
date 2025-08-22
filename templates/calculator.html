@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+
+{% block title %}BMI Calculator - Calculate{% endblock %}
+
+{% block extra_css %}
+<style>
+    .calculator-container {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .form-header h2 {
+        color: #2c3e50;
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+
+    .form-header p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    .input-group {
+        position: relative;
+        margin-bottom: 25px;
+    }
+
+    .input-group label {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        color: #999;
+        transition: all 0.3s ease;
+        pointer-events: none;
+        font-size: 1rem;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 20px 15px 10px 15px;
+        border: 2px solid #e1e8ed;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        background: #fff;
+        transition: all 0.3s ease;
+    }
+
+    .input-group input:focus,
+    .input-group input:valid {
+        border-color: #667eea;
+        box-shadow: 0 0 15px rgba(102, 126, 234, 0.2);
+    }
+
+    .input-group input:focus + label,
+    .input-group input:valid + label {
+        top: 5px;
+        font-size: 0.8rem;
+        color: #667eea;
+        font-weight: bold;
+    }
+
+    .unit-toggle {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .toggle-group {
+        display: inline-flex;
+        background: #f8f9fa;
+        border-radius: 25px;
+        padding: 5px;
+        border: 2px solid #e1e8ed;
+    }
+
+    .toggle-option {
+        padding: 10px 25px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        border-radius: 20px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        color: #666;
+    }
+
+    .toggle-option.active {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+    }
+
+    .unit-info {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 25px;
+        text-align: center;
+        color: #666;
+        font-size: 0.9rem;
+        border-left: 4px solid #667eea;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 15px;
+        font-size: 1.2rem;
+        margin-top: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+
+    .quick-tips {
+        background: rgba(255,255,255,0.1);
+        border-radius: 15px;
+        padding: 20px;
+        margin-top: 30px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .quick-tips h3 {
+        color: white;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .tips-list {
+        list-style: none;
+        color: rgba(255,255,255,0.9);
+    }
+
+    .tips-list li {
+        padding: 5px 0;
+        padding-left: 25px;
+        position: relative;
+    }
+
+    .tips-list li:before {
+        content: "💡";
+        position: absolute;
+        left: 0;
+    }
+
+    @media (max-width: 768px) {
+        .toggle-group {
+            width: 100%;
+        }
+        
+        .toggle-option {
+            flex: 1;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="calculator-container">
+    <div class="card">
+        <div class="form-header">
+            <h2>BMI Calculator</h2>
+            <p>Enter your height and weight to calculate your BMI</p>
+        </div>
+
+        {% if error %}
+        <div class="error">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <div class="unit-toggle">
+            <div class="toggle-group">
+                <button type="button" class="toggle-option active" data-unit="metric">Metric</button>
+                <button type="button" class="toggle-option" data-unit="imperial">Imperial</button>
+            </div>
+        </div>
+
+        <form method="POST" action="/calculate" id="bmiForm">
+            <div class="unit-info" id="unitInfo">
+                Using Metric units (kg, cm)
+            </div>
+
+            <div class="input-group">
+                <input type="number" id="weight" name="weight" step="0.1" min="1" max="1000" required>
+                <label for="weight" id="weightLabel">Weight (kg)</label>
+            </div>
+
+            <div class="input-group">
+                <input type="number" id="height" name="height" step="0.01" min="0.5" max="3" required>
+                <label for="height" id="heightLabel">Height (m)</label>
+            </div>
+
+            <button type="submit" class="btn submit-btn">Calculate BMI</button>
+        </form>
+    </div>
+
+    <div class="quick-tips">
+        <h3>Quick Tips</h3>
+        <ul class="tips-list">
+            <li>BMI is most accurate for adults aged 20-65</li>
+            <li>Results may vary for athletes with high muscle mass</li>
+            <li>Consult a healthcare provider for personalized advice</li>
+            <li>BMI is one of many health indicators</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleButtons = document.querySelectorAll('.toggle-option');
+        const weightInput = document.getElementById('weight');
+        const heightInput = document.getElementById('height');
+        const weightLabel = document.getElementById('weightLabel');
+        const heightLabel = document.getElementById('heightLabel');
+        const unitInfo = document.getElementById('unitInfo');
+        const form = document.getElementById('bmiForm');
+
+        let currentUnit = 'metric';
+
+        // Unit toggle functionality
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                toggleButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                const unit = this.getAttribute('data-unit');
+                currentUnit = unit;
+                
+                if (unit === 'metric') {
+                    weightLabel.textContent = 'Weight (kg)';
+                    heightLabel.textContent = 'Height (m)';
+                    unitInfo.textContent = 'Using Metric units (kg, m)';
+                    weightInput.placeholder = 'e.g. 70';
+                    heightInput.placeholder = 'e.g. 1.75';
+                    weightInput.max = '1000';
+                    heightInput.max = '3';
+                } else {
+                    weightLabel.textContent = 'Weight (lbs)';
+                    heightLabel.textContent = 'Height (ft)';
+                    unitInfo.textContent = 'Using Imperial units (lbs, ft)';
+                    weightInput.placeholder = 'e.g. 154';
+                    heightInput.placeholder = 'e.g. 5.74';
+                    weightInput.max = '2200';
+                    heightInput.max = '10';
+                }
+                
+                // Clear inputs when switching units
+                weightInput.value = '';
+                heightInput.value = '';
+            });
+        });
+
+        // Form submission with unit conversion
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let weight = parseFloat(weightInput.value);
+            let height = parseFloat(heightInput.value);
+            
+            if (!weight || !height || weight <= 0 || height <= 0) {
+                alert('Please enter valid positive numbers for weight and height.');
+                return;
+            }
+            
+            // Convert imperial to metric if needed
+            if (currentUnit === 'imperial') {
+                weight = weight * 0.453592; // lbs to kg
+                height = height * 0.3048;   // ft to meters
+            }
+            
+            // Create hidden inputs with metric values
+            const hiddenWeight = document.createElement('input');
+            hiddenWeight.type = 'hidden';
+            hiddenWeight.name = 'weight';
+            hiddenWeight.value = weight;
+            
+            const hiddenHeight = document.createElement('input');
+            hiddenHeight.type = 'hidden';
+            hiddenHeight.name = 'height';
+            hiddenHeight.value = height;
+            
+            // Remove original inputs temporarily
+            weightInput.name = '';
+            heightInput.name = '';
+            
+            // Add hidden inputs
+            form.appendChild(hiddenWeight);
+            form.appendChild(hiddenHeight);
+            
+            // Submit the form
+            form.submit();
+        });
+
+        // Add input animations
+        const inputs = document.querySelectorAll('input[type="number"]');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+                this.parentElement.style.transition = 'transform 0.3s ease';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Add loading animation to submit button
+        const submitBtn = document.querySelector('.submit-btn');
+        submitBtn.addEventListener('click', function() {
+            this.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+        });
+    });
+</script>
+{% endblock %}

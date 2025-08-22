@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}BMI Calculator - Your Results{% endblock %}
+
+{% block extra_css %}
+<style>
+    .result-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .result-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .result-header h2 {
+        color: #2c3e50;
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+
+    .bmi-display {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .bmi-circle {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        margin: 0 auto 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .bmi-value {
+        font-size: 3rem;
+        margin-bottom: 10px;
+    }
+
+    .bmi-label {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+
+    .bmi-category {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+        padding: 15px 30px;
+        border-radius: 25px;
+        color: white;
+        display: inline-block;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .input-summary {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+        border-left: 4px solid color;
+    }
+
+    .input-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 10px 0;
+        border-bottom: 1px solid #e1e8ed;
+    }
+
+    .input-row:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+
+    .input-label {
+        font-weight: bold;
+        color: #555;
+    }
+
+    .input-value {
+        color: #2c3e50;
+        font-size: 1.1rem;
+    }
+
+    .health-recommendations {
+        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
