@@ -67,7 +67,7 @@
         border-radius: 15px;
         padding: 25px;
         margin-bottom: 30px;
-        border-left: 4px solid color;
+        border-left: 4px solid {{ color }};
     }
 
     .input-row {
@@ -102,3 +102,278 @@
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255,255,255,0.2);
     }
+
+    .health-recommendations h3 {
+        color: white;
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 1.3rem;
+    }
+
+    .recommendations-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .recommendation {
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .recommendation-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .recommendation h4 {
+        color: white;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+    }
+
+    .recommendation p {
+        color: rgba(255,255,255,0.8);
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .actions {
+        text-align: center;
+        margin-top: 40px;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #e1e8ed;
+        border-radius: 4px;
+        margin: 20px 0;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: {{ color }};
+        border-radius: 4px;
+        transition: width 1s ease;
+        position: relative;
+    }
+
+    .bmi-scale {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: #666;
+        margin-top: 10px;
+    }
+
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(255,255,255,0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(255,255,255,0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(255,255,255,0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .bmi-circle {
+            width: 150px;
+            height: 150px;
+        }
+        
+        .bmi-value {
+            font-size: 2.5rem;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .recommendations-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="result-container">
+    <div class="card">
+        <div class="result-header">
+            <h2>Your BMI Results</h2>
+            <p>Here's your Body Mass Index calculation and health information</p>
+        </div>
+
+        <div class="bmi-display">
+            <div class="bmi-circle pulse" style="background-color: {{ color }};">
+                <div class="bmi-value">{{ bmi }}</div>
+                <div class="bmi-label">BMI</div>
+            </div>
+            
+            <div class="bmi-category" style="background-color: {{ color }};">
+                {{ category }}
+            </div>
+        </div>
+
+        <div class="input-summary">
+            <h3 style="margin-bottom: 20px; color: #2c3e50; text-align: center;">Your Input</h3>
+            <div class="input-row">
+                <span class="input-label">Weight:</span>
+                <span class="input-value">{{ "%.1f"|format(weight) }} kg</span>
+            </div>
+            <div class="input-row">
+                <span class="input-label">Height:</span>
+                <span class="input-value">{{ "%.2f"|format(height) }} m</span>
+            </div>
+            <div class="input-row">
+                <span class="input-label">BMI:</span>
+                <span class="input-value">{{ bmi }}</span>
+            </div>
+        </div>
+
+        <!-- BMI Scale Visualization -->
+        <div style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 30px;">
+            <h4 style="text-align: center; margin-bottom: 15px; color: #2c3e50;">BMI Scale</h4>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ ((bmi - 15) / 25 * 100)|round }}%;"></div>
+            </div>
+            <div class="bmi-scale">
+                <span>15</span>
+                <span>18.5</span>
+                <span>25</span>
+                <span>30</span>
+                <span>40+</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="health-recommendations">
+        <h3>Health Recommendations</h3>
+        <div class="recommendations-grid">
+            {% if category == "Underweight" %}
+            <div class="recommendation">
+                <span class="recommendation-icon">🍽️</span>
+                <h4>Nutrition</h4>
+                <p>Focus on healthy weight gain with nutrient-rich foods and regular meals</p>
+            </div>
+            <div class="recommendation">
+                <span class="recommendation-icon">💪</span>
+                <h4>Exercise</h4>
+                <p>Strength training can help build healthy muscle mass</p>
+            </div>
+            {% elif category == "Normal weight" %}
+            <div class="recommendation">
+                <span class="recommendation-icon">✅</span>
+                <h4>Maintain</h4>
+                <p>Great job! Continue your healthy lifestyle to maintain your current weight</p>
+            </div>
+            <div class="recommendation">
+                <span class="recommendation-icon">🏃</span>
+                <h4>Stay Active</h4>
+                <p>Regular exercise helps maintain your healthy weight and overall fitness</p>
+            </div>
+            {% elif category == "Overweight" %}
+            <div class="recommendation">
+                <span class="recommendation-icon">🥗</span>
+                <h4>Diet</h4>
+                <p>Consider a balanced diet with portion control and healthy food choices</p>
+            </div>
+            <div class="recommendation">
+                <span class="recommendation-icon">🚶</span>
+                <h4>Activity</h4>
+                <p>Increase physical activity with walking, cycling, or other enjoyable exercises</p>
+            </div>
+            {% else %}
+            <div class="recommendation">
+                <span class="recommendation-icon">👨‍⚕️</span>
+                <h4>Consult Doctor</h4>
+                <p>Consider consulting with a healthcare professional for personalized advice</p>
+            </div>
+            <div class="recommendation">
+                <span class="recommendation-icon">📊</span>
+                <h4>Plan</h4>
+                <p>Develop a structured plan for healthy weight management</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="actions">
+        <div class="btn-group">
+            <a href="/calculator" class="btn">Calculate Again</a>
+            <a href="/" class="btn btn-secondary">Back to Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate the BMI circle
+        const bmiCircle = document.querySelector('.bmi-circle');
+        const bmiValue = document.querySelector('.bmi-value');
+        const progressFill = document.querySelector('.progress-fill');
+        
+        // Animate BMI value counting up
+        const targetBMI = {{ bmi }};
+        let currentBMI = 0;
+        const increment = targetBMI / 50;
+        
+        const countUpAnimation = setInterval(() => {
+            currentBMI += increment;
+            if (currentBMI >= targetBMI) {
+                currentBMI = targetBMI;
+                clearInterval(countUpAnimation);
+            }
+            bmiValue.textContent = currentBMI.toFixed(1);
+        }, 30);
+
+        // Animate progress bar
+        setTimeout(() => {
+            progressFill.style.width = '{{ ((bmi - 15) / 25 * 100)|round }}%';
+        }, 500);
+
+        // Add hover effects to recommendations
+        const recommendations = document.querySelectorAll('.recommendation');
+        recommendations.forEach(rec => {
+            rec.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+                this.style.transition = 'transform 0.3s ease';
+                this.style.background = 'rgba(255,255,255,0.2)';
+            });
+            
+            rec.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+                this.style.background = 'rgba(255,255,255,0.1)';
+            });
+        });
+
+        // Print functionality
+        window.printResults = function() {
+            window.print();
+        };
+    });
+</script>
+{% endblock %}
