@@ -189,17 +189,17 @@
 
         <form method="POST" action="/calculate" id="bmiForm">
             <div class="unit-info" id="unitInfo">
-                Using Metric units (kg, cm)
+                Using Metric units (kg, ft)
             </div>
 
             <div class="input-group">
-                <input type="number" id="weight" name="weight" step="0.1" min="1" max="1000" required>
+                <input type="number" id="weight" name="weight" step="1" min="1" max="300" required>
                 <label for="weight" id="weightLabel">Weight (kg)</label>
             </div>
 
             <div class="input-group">
-                <input type="number" id="height" name="height" step="0.01" min="0.5" max="3" required>
-                <label for="height" id="heightLabel">Height (m)</label>
+                <input type="number" id="height" name="height" step="0.01" min="0.5" max="10" required>
+                <label for="height" id="heightLabel">Height (ft)</label>
             </div>
 
             <button type="submit" class="btn submit-btn">Calculate BMI</button>
@@ -242,20 +242,24 @@
                 
                 if (unit === 'metric') {
                     weightLabel.textContent = 'Weight (kg)';
-                    heightLabel.textContent = 'Height (m)';
-                    unitInfo.textContent = 'Using Metric units (kg, m)';
+                    heightLabel.textContent = 'Height (ft)';
+                    unitInfo.textContent = 'Using Metric units (kg, ft)';
                     weightInput.placeholder = 'e.g. 70';
-                    heightInput.placeholder = 'e.g. 1.75';
-                    weightInput.max = '1000';
-                    heightInput.max = '3';
+                    heightInput.placeholder = 'e.g. 5.6';
+                    weightInput.max = '300';
+                    weightInput.min = '40';
+                    heightInput.min = '3';
+                    heightInput.max = '10';
                 } else {
                     weightLabel.textContent = 'Weight (lbs)';
-                    heightLabel.textContent = 'Height (ft)';
-                    unitInfo.textContent = 'Using Imperial units (lbs, ft)';
+                    heightLabel.textContent = 'Height (cm)';
+                    unitInfo.textContent = 'Using Imperial units (lbs, cm)';
                     weightInput.placeholder = 'e.g. 154';
-                    heightInput.placeholder = 'e.g. 5.74';
-                    weightInput.max = '2200';
-                    heightInput.max = '10';
+                    heightInput.placeholder = 'e.g. 171';
+                    weightInput.max = '500';
+                    weightInput.min = '80';
+                    heightInput.min = '50';
+                    heightInput.max = '250';
                 }
                 
                 // Clear inputs when switching units
@@ -279,7 +283,11 @@
             // Convert imperial to metric if needed
             if (currentUnit === 'imperial') {
                 weight = weight * 0.453592; // lbs to kg
-                height = height * 0.3048;   // ft to meters
+                height = height / 100 ;   // cm to m
+            }
+            else
+            {
+                height = height * 0.3048; // ft to m
             }
             
             // Create hidden inputs with metric values
